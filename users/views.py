@@ -40,3 +40,29 @@ class RegistrationAPI(APIView):
             return JsonResponse(reg_mes,safe=False)
         except ValueError as e:
             return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+def login(post_info):
+    log_email = post_info["uemail"]
+    log_pass = post_info["upass"]
+    
+    try:       
+        realuser=users.objects.get(uemail=log_email)
+        if log_pass==realuser.upass:
+            log_mes="Login Success"
+        else:
+            log_mes="Incorrect Password"
+        return log_mes
+    
+    except users.DoesNotExist:
+        log_mes="Incorrect Email ID"
+        return log_mes
+
+class LoginAPI(APIView):
+    def post(self,request,format='json'):
+        try:
+            post_info = json.loads((request.body).decode('utf-8'))
+            log_mes = login(post_info)
+            return JsonResponse(log_mes,safe=False)
+        except ValueError as e:
+            return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
